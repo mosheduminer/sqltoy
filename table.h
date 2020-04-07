@@ -4,7 +4,16 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+// posix only
+#include <unistd.h>
+
 
 #define COLUMN_USERNAME_SIZE 32
 #define COLUMN_EMAIL_SIZE 255
@@ -37,16 +46,29 @@ void deserialize_row(void* source, Row* destination);
 #define ROWS_PER_PAGE (PAGE_SIZE / ROW_SIZE)
 #define TABLE_MAX_ROWS (ROWS_PER_PAGE * TABLE_MAX_PAGES)
 
+typedef struct Pager
+{
+    int file_descriptor;
+    uint32_t file_length;
+    void* pages[TABLE_MAX_PAGES];
+} Pager;
+
 typedef struct Table
 {
     uint32_t num_rows;
-    void* pages[TABLE_MAX_PAGES];
+    Pager* pager;
 } Table;
 
 void* row_slot(Table* table, uint32_t row_num);
 
-Table* new_table();
+Table* db_open(const char* file_name);
 
-void free_table(Table* table);
+void db_close(Table* table);
+
+void* get_page(Pager* pager, uint32_t page_num);
+
+Pager* pager_open(const char* file_name);
+
+void pager_flush(Pager* pager, uint32_t page_num, uint32_t size);
 
 #endif

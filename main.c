@@ -10,7 +10,14 @@
 
 int main(int argc, char const *argv[])
 {
-    Table* table = new_table();
+    if (argc < 2)
+    {
+        printf("Must supply a database filename.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    const char* file_name = argv[1];
+    Table* table = db_open(file_name);
     InputBuffer* input_buffer = new_input_buffer();
     while (true)
     {
@@ -19,7 +26,7 @@ int main(int argc, char const *argv[])
 
         if ((input_buffer->buffer[0]) == '.')
         {
-            switch (do_meta_command(input_buffer))
+            switch (do_meta_command(input_buffer, table))
             {
             case META_COMMAND_SUCCESS:
                 continue;
