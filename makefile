@@ -1,5 +1,6 @@
 default:
-	make test && ./test && make build
+	rm test_db_file.db
+	make build && make test && ./test
 
 build: main.c command.c line_utils.c
 	gcc -o sqltoy main.c command.c line_utils.c table.c -Werror -Wall

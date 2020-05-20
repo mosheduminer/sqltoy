@@ -40,7 +40,7 @@ int getLine(InputBuffer* buff)
     {
         return NO_INPUT;
     }
-    
+
     // If it was too long, there'll be no newline. In that case, we flush
     // to end of line so that excess doesn't affect the next call.
     if (buff->buffer[strlen(buff->buffer)-1] != '\n') {

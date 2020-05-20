@@ -8,41 +8,26 @@
 
 int tests_run = 0;
 
-static char* test_new_table()
+static char* test_insert_and_retrieve_row()
 {
-    Table* table = new_table();
-    mu_assert("table of wrong size",
-        sizeof(table->pages) == TABLE_MAX_PAGES * sizeof(void*)
-        );
-    free_table(table);
-    return 0;
-}
-
-static char* test_table_capacity()
-{
-    Table* table = new_table();
-    InputBuffer* buffer = new_input_buffer();
-    buffer->buffer = "insert 1 bob bob@example.com";
-    buffer->input_length = 28;
-    Statement statement;
-    prepare_statement(buffer, &statement);
-    for (uint32_t i = 0; i < TABLE_MAX_ROWS; i++)
-    {
-        mu_assert("table should be able to contain more rows",
-            execute_insert(&statement, table) == EXECUTE_SUCCESS
-            );
+    char actual[50];
+    char expected[50];
+    FILE * expected_file = fopen("./resources/test_insert_and_retrieve_row_output", "r");
+    FILE * file = popen("./sqltoy ./test_db_file.db < ./resources/test_insert_and_retrieve_row_input", "r");
+    for (int i = 0; i < 4; i++) {
+        fgets(expected, sizeof(expected), expected_file);
+        fgets(actual, sizeof(actual), file);
+        printf("%d%s%s", i, actual, expected);
+        mu_assert("inserts and retrieves a row", strcmp(expected, actual) == 0);
     }
-    mu_assert("table able to contain more than expected!?",
-        execute_insert(&statement, table) == EXECUTE_TABLE_FULL
-        );
-    free_table(table);
+    fclose(expected_file);
+    fclose(file);
     return 0;
 }
 
 static char* all_tests()
 {
-    mu_run_test(test_new_table);
-    mu_run_test(test_table_capacity);
+    mu_run_test(test_insert_and_retrieve_row);
     return 0;
 }
 
