@@ -1,5 +1,5 @@
 default:
-	rm test_db_file.db
+	rm -f test_db_file.db
 	make build && make test && ./test
 
 build: main.c command.c line_utils.c

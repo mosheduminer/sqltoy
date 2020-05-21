@@ -3,3 +3,4 @@ sqltoy
 test
 dbfile.db
 test_db_file.db
+resources/output_dump
